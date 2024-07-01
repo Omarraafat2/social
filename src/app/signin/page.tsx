@@ -1,5 +1,4 @@
 'use client';
-import '../app/globals.css';
 import React from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { useFormik } from 'formik';
