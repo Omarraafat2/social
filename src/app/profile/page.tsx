@@ -1,106 +1,129 @@
-'use client';
+"use client"
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Typography,
+  IconButton,
+  Avatar,
+  Input,
+  TextareaAutosize,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import { addPost } from "@/app/lib/postsSlice";
+import { useDispatch } from "react-redux";
 
-import Getuserdata from '../_comonents/getuserdata';
-import { Container, Typography, Avatar, styled, Grid, Paper, Box, Button, Divider, CircularProgress } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import AddPost from '../_comonents/addpost/addpost';
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { State } from "../../app/_interface/state";
-import Spiner from ".././_mediaSpinner/Spiner";  // Ensure the correct path
-import SinglePost from ".././_comonents/singlepost/singlepost";
-import { getAllPosts } from "../lib/postsSlice";
-
-const HomeContainer = styled(Grid)(({ theme }) => ({
-  marginTop: theme.spacing(4),
+const StyledBox = styled(Box)(({ theme }) => ({
+  maxWidth: 600,
+  margin: "auto",
   padding: theme.spacing(2),
-  justifyContent: "center",
-}));
-
-const PostsContainer = styled(Grid)(({ theme }) => ({
+  borderRadius: theme.spacing(2),
+  boxShadow: theme.shadows[3],
   marginTop: theme.spacing(4),
+  backgroundColor: theme.palette.background.paper,
 }));
 
-export default function Profile() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+const StyledTextarea = styled(TextareaAutosize)(({ theme }) => ({
+  width: "100%",
+  padding: theme.spacing(1),
+  borderRadius: theme.shape.borderRadius,
+  borderColor: theme.palette.divider,
+  "&:focus": {
+    borderColor: theme.palette.primary.main,
+  },
+  outline: "none",
+  fontSize: "1rem",
+  fontFamily: theme.typography.fontFamily,
+  resize: "vertical",
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: theme.spacing(2),
+  boxShadow: theme.shadows[2],
+  marginTop: theme.spacing(2),
+}));
+
+const ImagePreview = styled("img")({
+  maxHeight: "200px",
+  borderRadius: "8px",
+  marginTop: "16px",
+  width: "100%",
+  objectFit: "cover",
+});
+
+export default function AddPost() {
+  const [postContent, setPostContent] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const dispatch = useDispatch();
-  const { allPosts, isLoading } = useSelector((state: State) => state.posts);
 
-  const handleUserDataFetched = (data) => {
-    setCurrentUser(data);
-    console.log('Fetched user data:', data);
-    setLoading(false);
+  const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPostContent(event.target.value);
   };
 
-  useEffect(() => {
-    dispatch(getAllPosts());
-  }, [dispatch]);
-
-  const handleEditProfile = () => {
-    router.push('/upload-profile-photo');
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedImage(event.target.files[0]);
+    }
   };
 
-  const filteredItems = allPosts.filter(post => post?.user?._id === currentUser?.user?._id);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = {
+      body: postContent,
+      image: selectedImage,
+    };
+    dispatch(addPost(formData));
+    setPostContent("");
+    setSelectedImage(null);
+  };
 
   return (
-    <>
-      <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "center" }}>
-        <Container sx={{ margin: "10px" }}>
-          <Getuserdata onDataFetched={handleUserDataFetched} />
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <>
-              <div className='flex'>
-                <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4} container justifyContent="center">
-                      <Avatar src={currentUser?.user?.photo} alt={currentUser?.user?.name} sx={{ width: 150, height: 150 }} />
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Box sx={{ mb: 3 }}>
-                        <Typography variant="h4">{currentUser?.user?.name}</Typography>
-                        <Typography variant="subtitle1">{currentUser?.user?.dateOfBirth}</Typography>
-                        <Typography variant="subtitle1">{currentUser?.user?.gender}</Typography>
-                      </Box>
-                      <Divider />
-                      <Box sx={{ my: 3 }}>
-                        <Typography variant="h5">About</Typography>
-                        <Typography variant="body1">
-                          Hi, I'm a frontend developer. I hope you like this website!
-                        </Typography>
-                      </Box>
-                      <Divider />
-                      <Box sx={{ my: 3 }}>
-                        <Typography variant="h5">Contact</Typography>
-                        <Typography variant="body1">Email: {currentUser?.user?.email}</Typography>
-                        <Typography variant="body1">Phone: {currentUser?.user?.phone}</Typography>
-                      </Box>
-                      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button variant="contained" color="primary" onClick={handleEditProfile}>
-                          Edit Profile
-                        </Button>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </Paper>
-                <AddPost />
-              </div>
-              <PostsContainer container spacing={3}>
-                {filteredItems.map((post) => (
-                  <Grid key={post._id} item xs={12} sm={6} md={4}>
-                    <SinglePost postdetails={post} currentUser={currentUser} />
-                  </Grid>
-                ))}
-              </PostsContainer>
-            </>
-          )}
-        </Container>
-      </div>
-    </>
+    <StyledBox>
+      <Typography variant="h6" gutterBottom>
+        Create a Post
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <StyledTextarea
+          name="body"
+          value={postContent}
+          onChange={handleContentChange}
+          placeholder="What's on your mind?"
+          maxRows={6}
+          minRows={3}
+          sx={{ backgroundColor: "white", resize: "none", color: "black" }}
+        />
+        <input
+          accept="image/*"
+          id="image-upload"
+          type="file"
+          name="image"
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+        <label htmlFor="image-upload">
+          <IconButton
+            color="primary"
+            aria-label="upload picture"
+            component="span"
+            style={{ marginTop: "16px" }}
+          >
+            <PhotoCamera />
+          </IconButton>
+          <Typography variant="body2" display="inline">
+            Choose Image
+          </Typography>
+        </label>
+        {selectedImage && <ImagePreview src={URL.createObjectURL(selectedImage)} alt="Selected" />}
+        <StyledButton
+          variant="contained"
+          color="primary"
+          type="submit"
+          disabled={!postContent && !selectedImage}
+        >
+          Add Post
+        </StyledButton>
+      </form>
+    </StyledBox>
   );
 }

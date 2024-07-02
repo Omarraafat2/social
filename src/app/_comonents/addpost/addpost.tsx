@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useState } from "react";
 import {
   Box,
@@ -54,8 +54,8 @@ const ImagePreview = styled("img")({
 
 export default function AddPost() {
   const [postContent, setPostContent] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  let dispatch = useDispatch<any>();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const dispatch = useDispatch();
 
   const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPostContent(event.target.value);
@@ -63,18 +63,17 @@ export default function AddPost() {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedImage(URL.createObjectURL(event.target.files[0]));
+      setSelectedImage(event.target.files[0]);
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let formdata = new FormData();
-    let body = postContent;
-    let image = (e.target as HTMLFormElement).image.files[0];
-    formdata.append("body", body);
-    formdata.append("image", image);
-    dispatch(addPost(formdata));
+    const formData = {
+      body: postContent,
+      image: selectedImage,
+    };
+    dispatch(addPost(formData));
     setPostContent("");
     setSelectedImage(null);
   };
@@ -92,7 +91,7 @@ export default function AddPost() {
           placeholder="What's on your mind?"
           maxRows={6}
           minRows={3}
-          sx={{backgroundColor:"white",resize:"none",color:"black"}}
+          sx={{ backgroundColor: "white", resize: "none", color: "black" }}
         />
         <input
           accept="image/*"
@@ -115,7 +114,7 @@ export default function AddPost() {
             Choose Image
           </Typography>
         </label>
-        {selectedImage && <ImagePreview src={selectedImage} alt="Selected" />}
+        {selectedImage && <ImagePreview src={URL.createObjectURL(selectedImage)} alt="Selected" />}
         <StyledButton
           variant="contained"
           color="primary"

@@ -7,16 +7,32 @@ import axios from "axios";
 let headers = {
   token: localStorage.getItem("token"),
 };
+interface FormData {
+  body: string;
+  image: File | null;
+}
+
 
 export const getAllPosts = createAsyncThunk('postsSlice/getAllPosts', async () => {
   const response = await axios.get('https://linked-posts.routemisr.com/posts?limit=50', { headers });
   return response.data;
 });
 
-export const addPost = createAsyncThunk('postsSlice/addPost', async (formData) => {
-  const response = await axios.post('https://linked-posts.routemisr.com/posts', formData, { headers });
-  return response.data;
-});
+export const addPost = createAsyncThunk(
+  'posts/addPost',
+  async (formData: PostFormData, thunkAPI) => {
+    // Example async operation (replace with your API call)
+    const response = await fetch('/api/posts', {
+      method: 'POST',
+      body: JSON.stringify(formData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await response.json();
+    return data;
+  }
+);
 
 export const updatePost = createAsyncThunk('postsSlice/updatePost', async ({ postId, formData }) => {
   try {

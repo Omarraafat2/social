@@ -34,7 +34,7 @@ export default function Home() {
 
   const handleUserDataFetched = (data) => {
     setCurrentUser(data);
-    console.log('Fetched user data:', data);
+    // console.log('Fetched user data:', data);
   };
 
   useEffect(() => {
