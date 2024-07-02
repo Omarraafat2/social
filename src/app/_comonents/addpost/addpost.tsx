@@ -1,12 +1,10 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   Box,
   Button,
   Typography,
   IconButton,
-  Avatar,
-  Input,
   TextareaAutosize,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -69,10 +67,12 @@ export default function AddPost() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = {
-      body: postContent,
-      image: selectedImage,
-    };
+    const formData = new FormData();
+    formData.append('body', postContent);
+    if (selectedImage) {
+      formData.append('image', selectedImage);
+    }
+
     dispatch(addPost(formData));
     setPostContent("");
     setSelectedImage(null);
