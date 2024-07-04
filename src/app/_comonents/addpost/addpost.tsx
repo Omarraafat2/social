@@ -1,11 +1,12 @@
-"use client";
+'use client';
 import React, { useState } from "react";
 import {
   Box,
   Button,
   Typography,
   IconButton,
-  TextareaAutosize,
+  Avatar,
+  Input,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -34,6 +35,8 @@ const StyledTextarea = styled(TextareaAutosize)(({ theme }) => ({
   fontSize: "1rem",
   fontFamily: theme.typography.fontFamily,
   resize: "vertical",
+  backgroundColor: "white",
+  color: "black",
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -72,7 +75,6 @@ export default function AddPost() {
     if (selectedImage) {
       formData.append('image', selectedImage);
     }
-
     dispatch(addPost(formData));
     setPostContent("");
     setSelectedImage(null);
@@ -91,7 +93,6 @@ export default function AddPost() {
           placeholder="What's on your mind?"
           maxRows={6}
           minRows={3}
-          sx={{ backgroundColor: "white", resize: "none", color: "black" }}
         />
         <input
           accept="image/*"
