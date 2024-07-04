@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AppBar, Box, Toolbar, IconButton, Typography, InputBase,
-  Badge, MenuItem, Menu, Button,
+  MenuItem, Menu, Button,
   Avatar
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import {
-  Menu as MenuIcon, Search as SearchIcon, AccountCircle,
-  Mail as MailIcon, Notifications as NotificationsIcon,
+  Menu as MenuIcon, AccountCircle,
   MoreVert as MoreIcon, Home as HomeIcon
 } from '@mui/icons-material';
 import axios from 'axios';
@@ -190,30 +189,33 @@ const Navbar = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ background:'#222' }}>
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-            onClick={() => router.push('/home')}
-          >
-            <HomeIcon /> {/* Home icon to navigate to the home page */}
-          </IconButton>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-            onClick={() => router.push('/profile')}
-          >
-            <Person3Icon />{/* Home icon to navigate to the home page */}
-          </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {isAuthenticated ? (
-              <>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+            <Logo />
+          </Box>
+          {isAuthenticated ? (
+            <>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="home"
+                sx={{ mr: 2 }}
+                onClick={() => router.push('/home')}
+              >
+                <HomeIcon />
+              </IconButton>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="profile"
+                sx={{ mr: 2 }}
+                onClick={() => router.push('/profile')}
+              >
+                <Person3Icon />
+              </IconButton>
+              <Box sx={{ flexGrow: 1 }} />
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <IconButton
                   size="large"
                   edge="end"
@@ -229,14 +231,14 @@ const Navbar = () => {
                     <AccountCircle />
                   )}
                 </IconButton>
-              </>
-            ) : (
-              <>
-                <Button color="inherit" onClick={() => router.push('/signin')}>Sign In</Button>
-                <Button color="inherit" onClick={() => router.push('/signup')}>Sign Up</Button>
-              </>
-            )}
-          </Box>
+              </Box>
+            </>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button color="inherit" onClick={() => router.push('/signin')}>Sign In</Button>
+              <Button color="inherit" onClick={() => router.push('/signup')}>Sign Up</Button>
+            </Box>
+          )}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
